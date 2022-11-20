@@ -1,29 +1,86 @@
-specVersion: 0.0.1
+specVersion: 0.0.4
+description: ContentBase videos sharing platform
 schema:
   file: ./schema.graphql
+features:
+  - fullTextSearch
+  - nonFatalErrors
 dataSources:
+  ### Profile ###
   - kind: ethereum
-    name: ContentBaseProfile
-    network: goerli
+    name: ContentBaseProfileV1
+    network: localhost
     source:
-      address: "0x11bb7f67c0289141b633b355fe8d3b6f7356f22c"
-      abi: ContentBaseProfile
+      address: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707"
+      abi: ContentBaseProfileV1
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
-        - AdminChanged
-        - BeaconUpgraded
-        - Upgraded
+        - Profile
+        - Follow
       abis:
-        - name: ContentBaseProfile
-          file: ./abis/ContentBaseProfile.json
+        - name: ContentBaseProfileV1
+          file: ./abis/ContentBaseProfileV1.json
       eventHandlers:
-        - event: AdminChanged(address,address)
-          handler: handleAdminChanged
-        - event: BeaconUpgraded(indexed address)
-          handler: handleBeaconUpgraded
-        - event: Upgraded(indexed address)
-          handler: handleUpgraded
-      file: ./src/content-base-profile.ts
+        - event: ProfileCreated(indexed uint256,indexed address,string,string,string,bool,uint256)
+          handler: handleProfileCreated
+        - event: ProfileImageUpdated(indexed uint256,indexed address,string,uint256)
+          handler: handleProfileImageUpdated
+        - event: DefaultProfileUpdated(indexed uint256,indexed uint256,uint256)
+          handler: handleDefaultProfileUpdated
+        - event: FollowNFTMinted(indexed uint256,indexed uint256,indexed uint256,address,uint256)
+          handler: handleFollow
+        - event: FollowNFTBurned(indexed uint256,indexed uint256,indexed uint256,address,uint256)
+          handler: handleUnFollow
+      file: ./src/profile.ts
+
+  ### Publish ###
+  - kind: ethereum
+    name: ContentBasePublishV1
+    network: localhost
+    source:
+      address: "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853"
+      abi: ContentBasePublishV1
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Publish
+        - Like
+        - Comment
+      abis:
+        - name: ContentBasePublishV1
+          file: ./abis/ContentBasePublishV1.json
+      eventHandlers:
+        - event: PublishCreated(indexed uint256,indexed uint256,indexed address,string,string,string,string,string,uint8,uint8,uint8,uint256)
+          handler: handlePublishCreated
+        - event: PublishUpdated(indexed uint256,indexed uint256,indexed address,string,string,string,string,string,uint8,uint8,uint8,uint256)
+          handler: handlePublishUpdated
+        - event: PublishDeleted(indexed uint256,indexed uint256,indexed address,uint256)
+          handler: handlePublishDeleted
+        - event: PublishLiked(indexed uint256,indexed uint256,indexed uint256,address,address,uint32,uint32,uint256,uint256)
+          handler: handlePublishLiked
+        - event: PublishUnLiked(indexed uint256,indexed uint256,address,uint32,uint32,uint256)
+          handler: handlePublishUnLiked
+        - event: PublishDisLiked(indexed uint256,indexed uint256,address,uint32,uint32,uint256)
+          handler: handlePublishDisLiked
+        - event: PublishUndoDisLiked(indexed uint256,indexed uint256,address,uint32,uint32,uint256)
+          handler: handlePublishUndoDisLiked
+        - event: CommentCreated(indexed uint256,indexed uint256,indexed uint256,address,string,uint256)
+          handler: handleCommentCreated
+        - event: CommentUpdated(indexed uint256,indexed uint256,address,string,uint256)
+          handler: handleCommentUpdated
+        - event: CommentDeleted(indexed uint256,indexed uint256,address,uint256)
+          handler: handleCommentDeleted
+        - event: CommentLiked(indexed uint256,indexed uint256,address,address,uint32,uint32,uint256)
+          handler: handleCommentLiked
+        - event: CommentUnLiked(indexed uint256,indexed uint256,address,uint32,uint32,uint256)
+          handler: handleCommentUnLiked
+        - event: CommentDisLiked(indexed uint256,indexed uint256,address,uint32,uint32,uint256)
+          handler: handleCommentDisLiked
+        - event: CommentUndoDisLiked(indexed uint256,indexed uint256,address,uint32,uint32,uint256)
+          handler: handleCommentUndoDisLiked
+      file: ./src/publish.ts

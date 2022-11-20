@@ -1,6 +1,126 @@
-type ExampleEntity @entity {
-  id: ID!
-  count: BigInt!
-  previousAdmin: Bytes! # address
-  newAdmin: Bytes! # address
+type Profile @entity {
+  "Profile Token Id"
+  id: String!
+  "Profile owner (EOA address)"
+  owner: Bytes!
+  handle: String!
+  "Unformatted handle, for use to display in the UI"
+  originalHandle: String!
+  imageURI: String
+  "Whether the profile is a default profile of the owner or not"
+  default: Boolean!
+  followers: [Follow!] @derivedFrom(field: "followee")
+  following: [Follow!] @derivedFrom(field: "follower")
+  publishes: [Publish!] @derivedFrom(field: "creator")
+  likes: [Like!] @derivedFrom(field: "profile")
+  comments: [Comment!] @derivedFrom(field: "creator")
+  createdAt: BigInt!
+  updatedAt: BigInt
+}
+
+type Follow @entity {
+  "Follow Token Id"
+  id: String!
+  "The owner (EOA address) of the Follow NFT"
+  owner: Bytes!
+  "The following profile"
+  follower: Profile!
+  "The profile that is being followed"
+  followee: Profile!
+  createdAt: BigInt!
+}
+
+enum Category {
+  Empty
+  Music
+  Movies
+  Entertainment
+  Sports
+  Food
+  Travel
+  Gaming
+  News
+  Animals
+  Education
+  Science
+  Technology
+  Programming
+  LifeStyle
+  Vehicles
+  Children
+  Women
+  Men
+  Other
+  NotExist
+}
+
+type Publish @entity {
+  "Publish Token Id"
+  id: String!
+  "The owner (EOA address) of the Publish NFT"
+  owner: Bytes!
+  "The profile that creates the Publish"
+  creator: Profile!
+  imageURI: String!
+  contentURI: String!
+  metadataURI: String!
+  title: String!
+  description: String
+  primaryCategory: Category!
+  secondaryCategory: Category
+  tertiaryCategory: Category
+  "Total ethers received"
+  revenue: BigInt
+  "Likes that the publish has"
+  likes: [Like!] @derivedFrom(field: "publish")
+  "disLikes that the publish has"
+  disLikes: BigInt
+  # "Comments that the publish has"
+  comments: [Comment!] @derivedFrom(field: "target")
+  createdAt: BigInt!
+  updatedAt: BigInt
+}
+
+"Publish Like"
+type Like @entity {
+  "Like Token Id"
+  id: String!
+  "The profile that performed like, this is the owner of the Like NFT"
+  profile: Profile!
+  "The publish that was liked"
+  publish: Publish!
+  "Fee that was sent by the profile to the publish owner"
+  fee: BigInt!
+  createdAt: BigInt!
+  updatedAt: BigInt
+}
+
+type Comment @entity {
+  "Comment Token Id"
+  id: String!
+  "The profile who commented"
+  creator: Profile!
+  "The publish or comment that the comment was made on"
+  target: Publish!
+  contentURI: String!
+  likes: BigInt
+  disLikes: BigInt
+  # "Comments that the comment has"
+  comments: [SubComment!] @derivedFrom(field: "target")
+  createdAt: BigInt!
+  updatedAt: BigInt
+}
+
+type SubComment @entity {
+  "Comment Token Id"
+  id: String!
+  "The profile who commented"
+  creator: Profile!
+  "The comment that the comment was made on"
+  target: Comment!
+  contentURI: String!
+  likes: BigInt
+  disLikes: BigInt
+  createdAt: BigInt!
+  updatedAt: BigInt
 }

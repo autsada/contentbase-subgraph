@@ -1,7 +1,1 @@
-{
-  "goerli": {
-    "ContentBaseProfile": {
-      "address": "0x11bb7f67c0289141b633b355fe8d3b6f7356f22c"
-    }
-  }
-}
+{"localhost":{"ContentBaseProfileV1":{"address":"0x5FC8d32690cc91D4c39d9d3abcBD16989F875707"},"ContentBasePublishV1":{"address":"0xa513E6E4b8f2a923D98304ec87F64353C4D5C853"}}}
